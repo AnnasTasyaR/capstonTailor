@@ -1,0 +1,21 @@
+product_id,title,category,price,rating_star,historical_sold,cmt_count,shop_location
+1001,Kemeja Pria Premium,Kemeja,125000,4.7,320,128,Jakarta
+1002,Batik Tulis Solo,Batik,200000,4.8,250,100,Solo
+1003,Gamis Syari,Gamis,175000,4.8,290,116,Jakarta
+1004,Kebaya Modern,Kebaya,250000,4.6,160,64,Yogyakarta
+1005,Daster Katun,Daster,65000,4.3,720,288,Jakarta
+1006,Celana Jeans,Celana,150000,4.4,410,164,Bandung
+1007,Jas Blazer,Jas,350000,4.7,130,52,Jakarta
+1008,Seragam Kerja,Seragam,120000,4.4,380,152,Surabaya
+1009,Kemeja Slimfit,Kemeja,85000,4.5,580,232,Bandung
+1010,Hoodie Fashion,Jaket,180000,4.3,340,136,Bandung
+1011,Gamis Anak,Gamis,125000,4.5,270,108,Jakarta
+1012,Rok Plisket,Rok,90000,4.5,430,172,Bandung
+1013,Tunik Batik,Batik,135000,4.5,360,144,Solo
+1014,Kebaya Brokat,Kebaya,300000,4.7,140,56,Yogyakarta
+1015,Celana Kulot,Celana,115000,4.6,390,156,Surabaya
+1016,Kaos Distro,Kaos,75000,4.2,650,260,Bandung
+1017,Blouse Korea,Blouse,95000,4.5,510,204,Jakarta
+1018,Kemeja Flannel,Kemeja,140000,4.3,280,112,Bandung
+1019,Kemeja Kantor,Kemeja,110000,4.4,490,196,Yogyakarta
+1020,Daster Kombinasi,Daster,78000,4.4,540,216,Jakarta
