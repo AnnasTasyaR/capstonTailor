@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Pengaturan — Jahitln{% endblock %}
+{% block page_title %}Pengaturan Layanan{% endblock %}
+{% block page_subtitle %}Atur ketersediaan layanan jahit{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:540px">
+    <div class="card-header">
+        <span class="card-title">Jenis Layanan</span>
+        <span class="badge {% if tailor and tailor.status == 'open' %}badge-success{% else %}badge-danger{% endif %}">{{ tailor.status | upper if tailor else 'CLOSE' }}</span>
+    </div>
+    <form method="POST" action="{{ url_for('owner.settings') }}">
+        <div class="toggle-wrap">
+            <div>
+                <div class="toggle-label">✂️ Permak</div>
+                <div class="toggle-sublabel">Perbaikan dan modifikasi pakaian</div>
+            </div>
+            <label class="toggle">
+                <input type="checkbox" name="avail_permak" {% if avails.get('permak', True) %}checked{% endif %}>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="toggle-wrap">
+            <div>
+                <div class="toggle-label">👔 Custom Baju</div>
+                <div class="toggle-sublabel">Jahit pakaian custom dari desain</div>
+            </div>
+            <label class="toggle">
+                <input type="checkbox" name="avail_custom" {% if avails.get('custom', True) %}checked{% endif %}>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="toggle-wrap">
+            <div>
+                <div class="toggle-label">🎓 Seragam Sekolah</div>
+                <div class="toggle-sublabel">Pembuatan seragam sekolah</div>
+            </div>
+            <label class="toggle">
+                <input type="checkbox" name="avail_seragam" {% if avails.get('seragam', True) %}checked{% endif %}>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Profil Toko — Jahitln{% endblock %}
+{% block page_title %}Profil Toko{% endblock %}
+{% block page_subtitle %}Edit informasi toko Anda{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:640px">
+    <form method="POST" action="{{ url_for('owner.profile') }}">
+        <div class="grid-2">
+            <div class="form-group">
+                <label class="form-label">Nama Pemilik</label>
+                <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">No. Telepon</label>
+                <input type="tel" name="phone" class="form-control" value="{{ user.phone or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Nama Toko</label>
+            <input type="text" name="shop_name" class="form-control" value="{{ tailor.shop_name if tailor else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Alamat Toko</label>
+            <textarea name="address" class="form-control" rows="3">{{ tailor.address if tailor else '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Bio / Deskripsi</label>
+            <textarea name="bio" class="form-control" rows="3" placeholder="Ceritakan tentang toko Anda...">{{ tailor.bio if tailor else '' }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+    </form>
+</div>
+{% endblock %}

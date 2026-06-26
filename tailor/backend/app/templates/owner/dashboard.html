@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Toko — Jahitln{% endblock %}
+{% block page_title %}Dashboard Toko{% endblock %}
+{% block page_subtitle %}{{ tailor.shop_name if tailor else 'Selamat datang' }}{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-value">{{ active }}</div>
+        <div class="stat-label">Pesanan Aktif</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value">{{ pending }}</div>
+        <div class="stat-label">Menunggu Konfirmasi</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">{{ completed }}</div>
+        <div class="stat-label">Selesai</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value">{{ total }}</div>
+        <div class="stat-label">Total Pesanan</div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Info Toko</span>
+            <a href="{{ url_for('owner.profile') }}" class="btn btn-outline btn-sm">Edit</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+            <div>
+                <span class="text-muted" style="font-size:0.8rem">Nama Toko</span>
+                <div>{{ tailor.shop_name if tailor else '-' }}</div>
+            </div>
+            <div>
+                <span class="text-muted" style="font-size:0.8rem">Status</span>
+                <div>
+                    {% if tailor and tailor.status == 'open' %}
+                    <span class="badge badge-success">Open Order</span>
+                    {% else %}
+                    <span class="badge badge-danger">Closed</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                <span class="text-muted" style="font-size:0.8rem">Rating</span>
+                <div class="text-gold">★ {{ '%.1f' | format(tailor.rating) if tailor else '0.0' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Pesanan Terbaru</span>
+            <a href="{{ url_for('owner.orders') }}" class="btn btn-outline btn-sm">Lihat Semua</a>
+        </div>
+        {% for o in recent %}
+        <div class="order-card" style="margin-bottom:8px;padding:12px">
+            <div class="order-info">
+                <h4 style="font-size:0.9rem">#{{ o.queue_number }} — {{ o.customer.name if o.customer else 'Customer' }}</h4>
+                <div class="order-meta">
+                    <span>{{ o.type }}</span>
+                    <span>{{ o.created_at.strftime('%d/%m/%Y') if o.created_at else '' }}</span>
+                </div>
+            </div>
+            <span class="badge {% if o.status == 'pending' %}badge-warning{% elif o.status in ['selesai','siap_diambil'] %}badge-success{% else %}badge-info{% endif %}">{{ o.status }}</span>
+        </div>
+        {% endfor %}
+        {% if not recent %}
+        <p class="text-muted text-center">Belum ada pesanan</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

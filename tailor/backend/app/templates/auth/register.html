@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Owner — Jahitln</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card fade-in" style="max-width:520px">
+            <div class="brand">
+                <h1>Jahitln</h1>
+                <p>Daftarkan Toko Jahit Anda</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('auth.web_register') }}">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Nama Lengkap *</label>
+                        <input type="text" name="name" class="form-control" placeholder="Nama Anda" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Username *</label>
+                        <input type="text" name="username" class="form-control" placeholder="Username" required>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" name="email" class="form-control" placeholder="email@contoh.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">No. Telepon</label>
+                        <input type="tel" name="phone" class="form-control" placeholder="08xxxxxxxxxx">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nama Toko Jahit *</label>
+                    <input type="text" name="shop_name" class="form-control" placeholder="Nama toko jahit Anda" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alamat Toko</label>
+                    <textarea name="address" class="form-control" rows="2" placeholder="Alamat lengkap toko"></textarea>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Password *</label>
+                        <input type="password" name="password" class="form-control" placeholder="Min. 6 karakter" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Konfirmasi Password *</label>
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Ulangi password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Daftar Sekarang</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Sudah punya akun? <a href="{{ url_for('auth.web_login') }}">Login di sini</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

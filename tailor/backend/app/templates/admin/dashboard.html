@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Jahitln{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Ringkasan platform Jahitln{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-label">Total User</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">🧵</div>
+        <div class="stat-value">{{ total_tailors }}</div>
+        <div class="stat-label">Total Penjahit</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-value">{{ total_orders }}</div>
+        <div class="stat-label">Total Pesanan</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">👤</div>
+        <div class="stat-value">{{ total_customers }}</div>
+        <div class="stat-label">Total Customer</div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Status Pesanan</span>
+        </div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap">
+            <div style="text-align:center">
+                <div style="font-size:1.8rem;font-weight:700;color:var(--warning)">{{ pending_orders }}</div>
+                <div class="text-muted" style="font-size:0.8rem">Pending</div>
+            </div>
+            <div style="text-align:center">
+                <div style="font-size:1.8rem;font-weight:700;color:var(--success)">{{ completed_orders }}</div>
+                <div class="text-muted" style="font-size:0.8rem">Selesai</div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Quick Links</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="{{ url_for('admin.users') }}" class="btn btn-outline btn-sm">👥 Kelola User</a>
+            <a href="{{ url_for('admin.tailors') }}" class="btn btn-outline btn-sm">🧵 Kelola Penjahit</a>
+            <a href="{{ url_for('admin.orders') }}" class="btn btn-outline btn-sm">📦 Lihat Pesanan</a>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Pesanan Terbaru</span>
+            <a href="{{ url_for('admin.orders') }}" class="btn btn-outline btn-sm">Lihat Semua</a>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Customer</th><th>Penjahit</th><th>Jenis</th><th>Status</th><th>Tanggal</th></tr>
+                </thead>
+                <tbody>
+                    {% for o in recent_orders %}
+                    <tr>
+                        <td>#{{ o.id }}</td>
+                        <td>{{ o.customer.name if o.customer else '-' }}</td>
+                        <td>{{ o.tailor.shop_name if o.tailor else '-' }}</td>
+                        <td><span class="badge badge-primary">{{ o.type }}</span></td>
+                        <td><span class="badge {% if o.status == 'selesai' or o.status == 'siap_diambil' %}badge-success{% elif o.status == 'pending' %}badge-warning{% elif o.status == 'rejected' %}badge-danger{% else %}badge-info{% endif %}">{{ o.status }}</span></td>
+                        <td>{{ o.created_at.strftime('%d/%m/%Y') if o.created_at else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if not recent_orders %}
+                    <tr><td colspan="6" class="text-center text-muted">Belum ada pesanan</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

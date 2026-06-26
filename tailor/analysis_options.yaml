@@ -1,0 +1,13 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # GetX uses SCREAMING_CASE for route constants — this is intentional
+    constant_identifier_names: false
+    # Suppress unnecessary_underscores lint
+    unnecessary_underscores: false
+
+analyzer:
+  errors:
+    # Treat these as info only (not warnings/errors)
+    constant_identifier_names: ignore

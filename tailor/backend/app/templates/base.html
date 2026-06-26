@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Jahitln - Platform Manajemen Jasa Jahit Premium">
+    <title>{% block title %}Jahitln{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% block body %}
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">✂️</div>
+                <div class="brand-text">
+                    <h1>Jahitln</h1>
+                    <span>{% if session.get('role') == 'admin' %}Admin Panel{% else %}Owner Panel{% endif %}</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                {% block sidebar %}
+                {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('admin.dashboard') }}" class="nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                    <i>📊</i> Dashboard
+                </a>
+                <a href="{{ url_for('admin.users') }}" class="nav-item {% if request.endpoint == 'admin.users' %}active{% endif %}">
+                    <i>👥</i> Manajemen User
+                </a>
+                <a href="{{ url_for('admin.tailors') }}" class="nav-item {% if request.endpoint == 'admin.tailors' %}active{% endif %}">
+                    <i>🧵</i> Manajemen Penjahit
+                </a>
+                <a href="{{ url_for('admin.orders') }}" class="nav-item {% if request.endpoint == 'admin.orders' %}active{% endif %}">
+                    <i>📦</i> Semua Pesanan
+                </a>
+                {% elif session.get('role') == 'owner' %}
+                <a href="{{ url_for('owner.dashboard') }}" class="nav-item {% if request.endpoint == 'owner.dashboard' %}active{% endif %}">
+                    <i>📊</i> Dashboard
+                </a>
+                <a href="{{ url_for('owner.orders') }}" class="nav-item {% if 'owner.order' in (request.endpoint or '') %}active{% endif %}">
+                    <i>📋</i> Pesanan
+                </a>
+                <a href="{{ url_for('owner.profile') }}" class="nav-item {% if request.endpoint == 'owner.profile' %}active{% endif %}">
+                    <i>👤</i> Profil Toko
+                </a>
+                <a href="{{ url_for('owner.settings') }}" class="nav-item {% if request.endpoint == 'owner.settings' %}active{% endif %}">
+                    <i>⚙️</i> Pengaturan
+                </a>
+                {% endif %}
+                {% endblock %}
+            </nav>
+            <div class="sidebar-footer">
+                <div class="nav-divider"></div>
+                <a href="{{ url_for('auth.web_logout') }}" class="nav-item">
+                    <i>🚪</i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content fade-in">
+            <div class="page-header">
+                <div>
+                    <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+                    <p class="subtitle">{% block page_subtitle %}{% endblock %}</p>
+                </div>
+                <div class="header-actions">
+                    <div class="user-badge">
+                        <div class="avatar">{{ session.get('user_name', 'U')[0] | upper }}</div>
+                        <span>{{ session.get('user_name', 'User') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% endblock %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

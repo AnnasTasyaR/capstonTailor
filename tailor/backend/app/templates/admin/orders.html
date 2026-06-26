@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Semua Pesanan — Jahitln{% endblock %}
+{% block page_title %}Semua Pesanan{% endblock %}
+{% block page_subtitle %}Monitor seluruh pesanan platform{% endblock %}
+
+{% block content %}
+<div class="tabs">
+    <a href="{{ url_for('admin.orders') }}" class="tab {% if not status_filter %}active{% endif %}">Semua</a>
+    <a href="{{ url_for('admin.orders', status='pending') }}" class="tab {% if status_filter == 'pending' %}active{% endif %}">Pending</a>
+    <a href="{{ url_for('admin.orders', status='diproses') }}" class="tab {% if status_filter == 'diproses' %}active{% endif %}">Diproses</a>
+    <a href="{{ url_for('admin.orders', status='dijahit') }}" class="tab {% if status_filter == 'dijahit' %}active{% endif %}">Dijahit</a>
+    <a href="{{ url_for('admin.orders', status='selesai') }}" class="tab {% if status_filter == 'selesai' %}active{% endif %}">Selesai</a>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr><th>#</th><th>Customer</th><th>Penjahit</th><th>Jenis</th><th>Kompleksitas</th><th>Status</th><th>Antrian</th><th>Tanggal</th></tr>
+        </thead>
+        <tbody>
+            {% for o in orders %}
+            <tr>
+                <td>{{ o.id }}</td>
+                <td>{{ o.customer.name if o.customer else '-' }}</td>
+                <td>{{ o.tailor.shop_name if o.tailor else '-' }}</td>
+                <td><span class="badge badge-primary">{{ o.type }}</span></td>
+                <td><span class="badge {% if o.complexity == 'simple' %}badge-success{% elif o.complexity == 'complex' %}badge-danger{% else %}badge-warning{% endif %}">{{ o.complexity or '-' }}</span></td>
+                <td><span class="badge {% if o.status in ['selesai','siap_diambil'] %}badge-success{% elif o.status == 'pending' %}badge-warning{% elif o.status == 'rejected' %}badge-danger{% else %}badge-info{% endif %}">{{ o.status }}</span></td>
+                <td>{{ o.queue_number or '-' }}</td>
+                <td>{{ o.created_at.strftime('%d/%m/%Y') if o.created_at else '-' }}</td>
+            </tr>
+            {% endfor %}
+            {% if not orders %}
+            <tr><td colspan="8" class="text-center text-muted">Tidak ada pesanan</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

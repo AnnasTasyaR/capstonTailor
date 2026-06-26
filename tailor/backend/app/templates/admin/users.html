@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Manajemen User — Jahitln{% endblock %}
+{% block page_title %}Manajemen User{% endblock %}
+{% block page_subtitle %}Kelola semua pengguna platform{% endblock %}
+
+{% block content %}
+<div class="tabs">
+    <a href="{{ url_for('admin.users') }}" class="tab {% if not role_filter %}active{% endif %}">Semua</a>
+    <a href="{{ url_for('admin.users', role='customer') }}" class="tab {% if role_filter == 'customer' %}active{% endif %}">Customer</a>
+    <a href="{{ url_for('admin.users', role='owner') }}" class="tab {% if role_filter == 'owner' %}active{% endif %}">Owner</a>
+    <a href="{{ url_for('admin.users', role='admin') }}" class="tab {% if role_filter == 'admin' %}active{% endif %}">Admin</a>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr><th>ID</th><th>Nama</th><th>Email</th><th>Username</th><th>Role</th><th>Status</th><th>Aksi</th></tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>#{{ u.id }}</td>
+                <td>{{ u.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.username }}</td>
+                <td><span class="badge badge-primary">{{ u.role }}</span></td>
+                <td>
+                    {% if u.is_active_user %}
+                    <span class="badge badge-success">Aktif</span>
+                    {% else %}
+                    <span class="badge badge-danger">Nonaktif</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="d-flex gap-1">
+                        {% if u.role != 'admin' %}
+                        <form method="POST" action="{{ url_for('admin.toggle_user', uid=u.id) }}" style="display:inline">
+                            <button type="submit" class="btn btn-sm {% if u.is_active_user %}btn-danger{% else %}btn-success{% endif %}" data-confirm="Yakin ingin mengubah status user ini?">
+                                {{ 'Nonaktifkan' if u.is_active_user else 'Aktifkan' }}
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ url_for('admin.delete_user', uid=u.id) }}" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-danger" data-confirm="Yakin ingin menghapus user ini? Tindakan ini tidak dapat dibatalkan.">Hapus</button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted">—</span>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Manajemen Penjahit — Jahitln{% endblock %}
+{% block page_title %}Manajemen Penjahit{% endblock %}
+{% block page_subtitle %}Verifikasi dan kelola penjahit{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <table>
+        <thead>
+            <tr><th>ID</th><th>Nama Toko</th><th>Pemilik</th><th>Alamat</th><th>Rating</th><th>Status</th><th>Verifikasi</th><th>Aksi</th></tr>
+        </thead>
+        <tbody>
+            {% for t in tailors %}
+            <tr>
+                <td>#{{ t.id }}</td>
+                <td><strong>{{ t.shop_name }}</strong></td>
+                <td>{{ t.user.name if t.user else '-' }}</td>
+                <td>{{ t.address or '-' }}</td>
+                <td><span class="text-gold">★ {{ '%.1f' | format(t.rating) }}</span></td>
+                <td>
+                    {% if t.is_suspended %}
+                    <span class="badge badge-danger">Suspended</span>
+                    {% elif t.status == 'open' %}
+                    <span class="badge badge-success">Open</span>
+                    {% else %}
+                    <span class="badge badge-warning">Closed</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if t.is_verified %}
+                    <span class="badge badge-success">✓ Verified</span>
+                    {% else %}
+                    <span class="badge badge-warning">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="d-flex gap-1">
+                        {% if not t.is_verified %}
+                        <form method="POST" action="{{ url_for('admin.verify_tailor', tid=t.id) }}" style="display:inline">
+                            <button type="submit" class="btn btn-sm btn-success">Verifikasi</button>
+                        </form>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('admin.suspend_tailor', tid=t.id) }}" style="display:inline">
+                            <button type="submit" class="btn btn-sm {% if t.is_suspended %}btn-success{% else %}btn-danger{% endif %}" data-confirm="Yakin?">
+                                {{ 'Aktifkan' if t.is_suspended else 'Suspend' }}
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not tailors %}
+            <tr><td colspan="8" class="text-center text-muted">Belum ada penjahit terdaftar</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

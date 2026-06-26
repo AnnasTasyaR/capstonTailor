@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Pesanan — Jahitln{% endblock %}
+{% block page_title %}Pesanan{% endblock %}
+{% block page_subtitle %}Kelola pesanan masuk{% endblock %}
+
+{% block content %}
+<div class="tabs">
+    <a href="{{ url_for('owner.orders', tab='active') }}" class="tab {% if tab == 'active' %}active{% endif %}">🔄 Antrian Aktif</a>
+    <a href="{{ url_for('owner.orders', tab='history') }}" class="tab {% if tab == 'history' %}active{% endif %}">📜 Riwayat</a>
+</div>
+
+{% for o in orders %}
+<a href="{{ url_for('owner.order_detail', oid=o.id) }}" style="text-decoration:none;color:inherit">
+    <div class="order-card">
+        <div class="order-info">
+            <h4>#{{ o.queue_number }} — {{ o.customer.name if o.customer else 'Customer' }}</h4>
+            <div class="order-meta">
+                <span>📌 {{ o.type | capitalize }}</span>
+                <span>🎯 {{ o.complexity or '-' }}</span>
+                <span>📅 {{ o.created_at.strftime('%d %b %Y') if o.created_at else '-' }}</span>
+                {% if o.estimated_done %}
+                <span>⏰ Est: {{ o.estimated_done.strftime('%d %b %Y') }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+            <span class="badge {% if o.status == 'pending' %}badge-warning{% elif o.status == 'rejected' %}badge-danger{% elif o.status in ['selesai','siap_diambil'] %}badge-success{% else %}badge-info{% endif %}">{{ o.status }}</span>
+            <span style="color:var(--text-muted)">→</span>
+        </div>
+    </div>
+</a>
+{% endfor %}
+
+{% if not orders %}
+<div class="card text-center" style="padding:48px">
+    <div style="font-size:3rem;margin-bottom:16px">📭</div>
+    <h3 style="color:var(--text-muted);font-weight:400">Tidak ada pesanan {{ 'aktif' if tab == 'active' else 'dalam riwayat' }}</h3>
+</div>
+{% endif %}
+{% endblock %}
