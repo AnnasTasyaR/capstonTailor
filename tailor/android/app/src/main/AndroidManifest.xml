@@ -30,6 +30,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- default_web_client_id for Google Sign-In (falls back to google-services.json) -->
+        <meta-data
+            android:name="com.google.android.gms.auth.CLIENT_ID"
+            android:value="552186394199-2n5qtmnv2tam9bm6jq0mf866i2qijtrg.apps.googleusercontent.com" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

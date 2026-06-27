@@ -5,7 +5,7 @@ import 'package:http/io_client.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiProvider {
-  static const String baseUrl = 'https://obvious-twins-robust.ngrok-free.dev';
+  static const String baseUrl = 'https://hemicranic-justus-jauntily.ngrok-free.dev';
   static const Duration _timeout = Duration(seconds: 15);
 
   // ── Secure Storage (Android Keystore / iOS Keychain) ─────────────────────

@@ -7,4 +7,16 @@ class NotificationProvider {
     final list = result['notifications'] as List? ?? [];
     return list.map((e) => NotificationModel.fromJson(e)).toList();
   }
+
+  static Future<void> markAsRead(int id) async {
+    await ApiProvider.put('/api/notifications/$id/read');
+  }
+
+  static Future<void> markAllAsRead() async {
+    await ApiProvider.put('/api/notifications/read-all');
+  }
+
+  static Future<Map<String, dynamic>> getUnreadCount() async {
+    return await ApiProvider.get('/api/notifications');
+  }
 }

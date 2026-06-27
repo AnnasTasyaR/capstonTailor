@@ -14,7 +14,7 @@ class LoginController extends GetxController {
   final _googleSignIn = GoogleSignIn(
     scopes: ['email', 'profile'],
     // Web Client ID dari Google Cloud Console — digunakan backend untuk verifikasi ID token
-    serverClientId: '552186394199-2n5qtmnv2tam9bm6jq0mf866i2qijtrg.apps.googleusercontent.com',
+    serverClientId: '264858038446-ht6ru04oqkihunofjqg0mtvbrm3ulfgv.apps.googleusercontent.com',
   );
 
   void togglePassword() => obscurePassword.value = !obscurePassword.value;

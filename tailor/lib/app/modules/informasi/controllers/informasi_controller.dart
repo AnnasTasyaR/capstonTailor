@@ -16,13 +16,14 @@ class InformasiController extends GetxController {
     loadAll();
   }
 
-  void loadAll() {
-    loadPopuler();
-    loadTren();
-    loadRating();
+  void loadAll({bool force = false}) {
+    loadPopuler(force: force);
+    loadTren(force: force);
+    loadRating(force: force);
   }
 
-  Future<void> loadPopuler() async {
+  Future<void> loadPopuler({bool force = false}) async {
+    if (populer.isNotEmpty && !force) return;
     isLoadingPopuler.value = true;
     try {
       final result = await InformasiProvider.getPopuler();
@@ -37,7 +38,8 @@ class InformasiController extends GetxController {
     }
   }
 
-  Future<void> loadTren() async {
+  Future<void> loadTren({bool force = false}) async {
+    if (tren.isNotEmpty && !force) return;
     isLoadingTren.value = true;
     try {
       final result = await InformasiProvider.getTren();
@@ -52,7 +54,8 @@ class InformasiController extends GetxController {
     }
   }
 
-  Future<void> loadRating() async {
+  Future<void> loadRating({bool force = false}) async {
+    if (rating.isNotEmpty && !force) return;
     isLoadingRating.value = true;
     try {
       final result = await InformasiProvider.getRating();

@@ -7,6 +7,7 @@ from app.models.tailor import Tailor, TailorAvailability
 from app.models.order import OrderQueue, OrderHistory
 from app.models.notification import Notification
 from app.models.favourite import Favourite
+from app.models.activity_log import ActivityLog
 from app.middleware.jwt_guard import role_required
 from datetime import datetime, timedelta
 import os, uuid
@@ -153,6 +154,7 @@ def create_order():
     db.session.flush()
     db.session.add(OrderHistory(order_id=order.id, status='pending', notes='Pesanan dibuat'))
     db.session.add(Notification(user_id=tailor.user_id, message=f'Pesanan baru #{qn} ({order_type})'))
+    db.session.add(ActivityLog(user_id=uid, activity_type='checkout', description=f'Membuat pesanan {order_type} #{qn}'))
     db.session.commit()
     return jsonify({"msg": "Pesanan berhasil dibuat", "order": order.to_dict()}), 201
 
@@ -228,6 +230,25 @@ def toggle_notifications():
     return jsonify({"msg": "Pengaturan notifikasi diperbarui"}), 200
 
 
+@customer_bp.route('/api/notifications/<int:nid>/read', methods=['PUT'])
+@role_required('customer')
+def mark_notification_read(nid):
+    uid = int(get_jwt_identity())
+    notif = Notification.query.filter_by(id=nid, user_id=uid).first_or_404()
+    notif.is_read = True
+    db.session.commit()
+    return jsonify({"msg": "Notifikasi ditandai sudah dibaca"}), 200
+
+
+@customer_bp.route('/api/notifications/read-all', methods=['PUT'])
+@role_required('customer')
+def mark_all_notifications_read():
+    uid = int(get_jwt_identity())
+    Notification.query.filter_by(user_id=uid, is_read=False).update({'is_read': True})
+    db.session.commit()
+    return jsonify({"msg": "Semua notifikasi ditandai sudah dibaca"}), 200
+
+
 # ── Favourites ──────────────────────────────────────────────────────────────
 
 @customer_bp.route('/api/favourites', methods=['GET'])
@@ -262,6 +283,16 @@ def remove_favourite(tailor_id):
     db.session.delete(fav)
     db.session.commit()
     return jsonify({"msg": "Dihapus dari favorit"}), 200
+
+
+# ── Activity Logs ────────────────────────────────────────────────────────────
+
+@customer_bp.route('/api/activity-logs', methods=['GET'])
+@role_required('customer')
+def get_activity_logs():
+    uid = int(get_jwt_identity())
+    logs = ActivityLog.query.filter_by(user_id=uid).order_by(ActivityLog.created_at.desc()).limit(50).all()
+    return jsonify({"activity_logs": [log.to_dict() for log in logs]}), 200
 
 
 # ── Rating ──────────────────────────────────────────────────────────────────

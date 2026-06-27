@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../theme/app_colors.dart';
 import '../../../routes/app_pages.dart';
 import '../../../data/models/tailor_model.dart';
+import '../../../data/providers/notification_provider.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -776,6 +777,7 @@ class HomeView extends GetView<HomeController> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     'Notifikasi',
@@ -785,6 +787,22 @@ class HomeView extends GetView<HomeController> {
                       color: AppColors.textPrimary,
                     ),
                   ),
+                  Obx(() => controller.unreadCount.value > 0
+                      ? GestureDetector(
+                          onTap: () async {
+                            await NotificationProvider.markAllAsRead();
+                            controller.loadNotifications();
+                          },
+                          child: Text(
+                            'Tandai semua dibaca',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        )
+                      : const SizedBox()),
                 ],
               ),
             ),
@@ -816,36 +834,55 @@ class HomeView extends GetView<HomeController> {
                   itemCount: controller.notifications.length,
                   itemBuilder: (_, i) {
                     final n = controller.notifications[i];
-                    return ListTile(
-                      leading: Container(
-                        width: 40,
-                        height: 40,
+                    return GestureDetector(
+                      onTap: n.isRead
+                          ? null
+                          : () async {
+                              await NotificationProvider.markAsRead(n.id);
+                              controller.loadNotifications();
+                            },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 6),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
+                          color: n.isRead ? Colors.white : AppColors.primary.withValues(alpha: 0.04),
+                          borderRadius: BorderRadius.circular(12),
+                          border: n.isRead ? null : Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
                         ),
-                        child: const Icon(
-                          Icons.notifications_outlined,
-                          color: AppColors.primary,
-                          size: 20,
+                        child: ListTile(
+                          leading: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: n.isRead
+                                  ? AppColors.textMuted.withValues(alpha: 0.1)
+                                  : AppColors.primary.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.notifications_outlined,
+                              color: n.isRead ? AppColors.textMuted : AppColors.primary,
+                              size: 20,
+                            ),
+                          ),
+                          title: Text(
+                            n.message,
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              fontWeight: n.isRead ? FontWeight.w400 : FontWeight.w600,
+                              color: n.isRead ? AppColors.textSecondary : AppColors.textPrimary,
+                            ),
+                          ),
+                          subtitle: n.createdAt != null
+                              ? Text(
+                                  _formatNotifTime(n.createdAt!),
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 11,
+                                    color: AppColors.textMuted,
+                                  ),
+                                )
+                              : null,
                         ),
                       ),
-                      title: Text(
-                        n.message,
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      subtitle: n.createdAt != null
-                          ? Text(
-                              n.createdAt!,
-                              style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                color: AppColors.textMuted,
-                              ),
-                            )
-                          : null,
                     );
                   },
                 ),
@@ -857,6 +894,20 @@ class HomeView extends GetView<HomeController> {
       ),
       isScrollControlled: true,
     );
+  }
+
+  String _formatNotifTime(String iso) {
+    try {
+      final dt = DateTime.parse(iso);
+      final now = DateTime.now();
+      final diff = now.difference(dt);
+      if (diff.inMinutes < 1) return 'Baru saja';
+      if (diff.inMinutes < 60) return '${diff.inMinutes}m yang lalu';
+      if (diff.inHours < 24) return '${diff.inHours}j yang lalu';
+      return '${diff.inDays}h yang lalu';
+    } catch (_) {
+      return iso;
+    }
   }
 }
 

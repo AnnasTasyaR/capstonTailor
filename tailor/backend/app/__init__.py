@@ -130,6 +130,7 @@ def create_app():
     from app.models.order import OrderQueue, OrderHistory
     from app.models.notification import Notification
     from app.models.favourite import Favourite
+    from app.models.activity_log import ActivityLog
 
     @login_manager.user_loader
     def load_user(user_id):

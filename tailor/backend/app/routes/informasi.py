@@ -1,68 +1,88 @@
 from flask import Blueprint, jsonify
-import pandas as pd
-import os
+from app import db
+from app.models.tailor import Tailor
+from app.models.order import OrderQueue
+from sqlalchemy import func
+from datetime import datetime, timedelta
+
 
 informasi_bp = Blueprint('informasi', __name__)
-DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', '..', 'data')
-DATA_DIR = os.path.abspath(DATA_DIR)
 
 
-def _read_csv(filename: str) -> list[dict]:
-    path = os.path.join(DATA_DIR, filename)
-    if not os.path.exists(path):
-        return []
-    df = pd.read_csv(path)
-    if 'product_id' in df.columns:
-        df['product_id'] = df['product_id'].astype(str)
-    return df.to_dict(orient='records')
+def _today_local():
+    return datetime.utcnow().date()
 
 
 @informasi_bp.route('/api/informasi/populer', methods=['GET'])
 def fashion_populer():
-    """Model fashion yang paling sering dipesan."""
-    produk = _read_csv('produk_fashion.csv')
-    produk.sort(key=lambda p: p.get('historical_sold', 0), reverse=True)
-    return jsonify({'produk': produk[:20], 'total': len(produk)})
+    top = db.session.query(
+        OrderQueue.tailor_id,
+        OrderQueue.type,
+        func.count(OrderQueue.id).label('order_count')
+    ).group_by(
+        OrderQueue.tailor_id, OrderQueue.type
+    ).order_by(
+        func.count(OrderQueue.id).desc()
+    ).limit(20).all()
+
+    hasil = []
+    for tailor_id, service_type, count in top:
+        tailor = db.session.get(Tailor, tailor_id)
+        shop_name = tailor.shop_name if tailor else 'Tidak dikenal'
+        hasil.append({
+            'title': f'{shop_name} - {service_type}',
+            'category': service_type,
+            'historical_sold': count,
+            'price': 0,
+        })
+    return jsonify({'produk': hasil, 'total': len(hasil)})
 
 
 @informasi_bp.route('/api/informasi/tren', methods=['GET'])
 def tren_fashion():
-    """Tren order fashion per hari."""
-    pesanan = _read_csv('simulasi_pesanan.csv')
-    from collections import Counter
-    daily = Counter()
-    for p in pesanan:
-        daily[p.get('date', '')] += 1
-    tren = [{'date': d, 'orders': c} for d, c in sorted(daily.items())]
+    today = _today_local()
+    # Always return 7 consecutive days (fill missing days with 0)
+    rows = dict(
+        db.session.query(
+            func.date(OrderQueue.created_at).label('tgl'),
+            func.count(OrderQueue.id).label('jml')
+        ).filter(
+            func.date(OrderQueue.created_at) >= today - timedelta(days=6)
+        ).group_by(
+            func.date(OrderQueue.created_at)
+        ).all()
+    )
+
+    tren = []
+    for i in range(6, -1, -1):
+        d = today - timedelta(days=i)
+        tren.append({'date': str(d), 'orders': rows.get(d, 0)})
     return jsonify({'tren': tren, 'total_hari': len(tren)})
 
 
 @informasi_bp.route('/api/informasi/rating', methods=['GET'])
 def rating_fashion():
-    """Rating produk fashion."""
-    feedback = _read_csv('simulasi_feedback.csv')
-    produk = _read_csv('produk_fashion.csv')
-    # aggregate rating per produk from feedback
-    agg = {}
-    for f in feedback:
-        pid = str(f.get('product_id', ''))
-        if pid not in agg:
-            agg[pid] = {'ratings': [], 'count': 0}
-        agg[pid]['ratings'].append(f.get('rating', 0))
-        agg[pid]['count'] += 1
-    # merge with produk data
+    tailor_list = Tailor.query.filter(
+        Tailor.is_suspended == False
+    ).order_by(Tailor.rating.desc()).all()
+
+    order_counts = dict(
+        db.session.query(
+            OrderQueue.tailor_id,
+            func.count(OrderQueue.id)
+        ).filter(
+            OrderQueue.status.in_(['selesai', 'siap_diambil'])
+        ).group_by(OrderQueue.tailor_id).all()
+    )
+
     hasil = []
-    for p in produk:
-        pid = str(p.get('product_id', ''))
-        r = agg.get(pid, {})
-        ratings = r.get('ratings', [])
+    for t in tailor_list:
         hasil.append({
-            'product_id': pid,
-            'title': p.get('title', ''),
-            'category': p.get('category', ''),
-            'rating_star': p.get('rating_star', 0),
-            'rating_avg': round(sum(ratings) / len(ratings), 2) if ratings else 0,
-            'rating_count': len(ratings),
+            'title': t.shop_name,
+            'category': 'Tailor',
+            'rating_star': t.rating,
+            'rating_avg': round(t.rating, 2),
+            'rating_count': order_counts.get(t.id, 0),
         })
-    hasil.sort(key=lambda p: p['rating_avg'], reverse=True)
+    hasil.sort(key=lambda x: x['rating_avg'], reverse=True)
     return jsonify({'rating': hasil, 'total': len(hasil)})

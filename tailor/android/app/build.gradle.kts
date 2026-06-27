@@ -3,8 +3,7 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
-    // Note: google-services plugin NOT applied here — serverClientId is passed directly
-    // from Dart code (GoogleSignIn(serverClientId: ...)), so Firebase plugin is not needed.
+    id("com.google.gms.google-services")
 }
 
 android {

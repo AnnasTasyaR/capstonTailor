@@ -101,7 +101,7 @@ class InformasiView extends GetView<InformasiController> {
                 controller.isLoadingTren.value ||
                 controller.isLoadingRating.value
                 ? null
-                : () => controller.loadAll(),
+                : () => controller.loadAll(force: true),
             icon: controller.isLoadingPopuler.value ||
                 controller.isLoadingTren.value ||
                 controller.isLoadingRating.value
@@ -134,7 +134,7 @@ class _PopulerTab extends StatelessWidget {
         );
       }
       return RefreshIndicator(
-        onRefresh: () => c.loadPopuler(),
+        onRefresh: () => c.loadPopuler(force: true),
         child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: c.populer.length,
@@ -177,7 +177,7 @@ class _TrenTab extends StatelessWidget {
       final last7 = c.tren.sublist(c.tren.length > 7 ? c.tren.length - 7 : 0);
 
       return RefreshIndicator(
-        onRefresh: () => c.loadTren(),
+        onRefresh: () => c.loadTren(force: true),
         child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -309,7 +309,9 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-String _dayName(String dateStr) {
+String _dayLabel(String dateStr, {bool isToday = false, bool isYesterday = false}) {
+  if (isToday) return 'Hari ini';
+  if (isYesterday) return 'Kemarin';
   if (dateStr.length < 10) return dateStr;
   final date = DateTime.tryParse(dateStr);
   if (date == null) return dateStr;
@@ -404,7 +406,8 @@ class _ChartCard extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 4),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
-                            children: last7.map((t) {
+                            children: last7.asMap().entries.map((e) {
+                              final t = e.value;
                               final orders = (t['orders'] as int?) ?? 0;
                               final ratio = maxOrders > 0
                                   ? orders / maxOrders
@@ -412,6 +415,16 @@ class _ChartCard extends StatelessWidget {
                               final dateStr = t['date'] as String;
                               final isToday =
                                   dateStr == last7.last['date'];
+                              final isYesterday = last7.length >= 2 &&
+                                  dateStr == last7[last7.length - 2]['date'];
+                              Color barColor;
+                              if (isToday) {
+                                barColor = const Color(0xFF1B2A6B);
+                              } else if (isYesterday) {
+                                barColor = const Color(0xFFF59E0B);
+                              } else {
+                                barColor = const Color(0xFF3B82F6);
+                              }
                               return Expanded(
                                 child: Column(
                                   mainAxisAlignment:
@@ -421,9 +434,7 @@ class _ChartCard extends StatelessWidget {
                                       height: (100.0 * ratio)
                                           .clamp(4.0, 100.0),
                                       decoration: BoxDecoration(
-                                        color: isToday
-                                            ? const Color(0xFF1B2A6B)
-                                            : const Color(0xFF3B82F6),
+                                        color: barColor,
                                         borderRadius:
                                             BorderRadius.vertical(
                                           top: Radius.circular(
@@ -461,13 +472,15 @@ class _ChartCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 28),
             child: Row(
-              children: last7.map((t) {
+              children: last7.asMap().entries.map((e) {
+                final t = e.value;
                 final dateStr = t['date'] as String;
                 final isToday = dateStr == last7.last['date'];
+                final isYesterday = last7.length >= 2 && dateStr == last7[last7.length - 2]['date'];
                 return Expanded(
                   child: Column(
                     children: [
-                      Text(_dayName(dateStr),
+                      Text(_dayLabel(dateStr, isToday: isToday, isYesterday: isYesterday),
                         style: GoogleFonts.poppins(
                           fontSize: 9,
                           color: isToday
@@ -478,19 +491,20 @@ class _ChartCard extends StatelessWidget {
                               : FontWeight.w400,
                         ),
                       ),
-                      Text(dateStr.length >= 10
-                          ? dateStr.substring(8, 10)
-                          : dateStr,
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          fontWeight: isToday
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          color: isToday
-                              ? AppColors.primary
-                              : AppColors.textPrimary,
+                      if (!isToday && !isYesterday)
+                        Text(dateStr.length >= 10
+                            ? dateStr.substring(8, 10)
+                            : dateStr,
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            fontWeight: isToday
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: isToday
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 );
@@ -504,8 +518,10 @@ class _ChartCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _LegendDot(color: const Color(0xFF1B2A6B), label: 'Hari ini'),
-                const SizedBox(width: 16),
-                _LegendDot(color: const Color(0xFF3B82F6), label: 'Hari sebelumnya'),
+                const SizedBox(width: 12),
+                _LegendDot(color: const Color(0xFFF59E0B), label: 'Kemarin'),
+                const SizedBox(width: 12),
+                _LegendDot(color: const Color(0xFF3B82F6), label: 'Lainnya'),
               ],
             ),
           ),
@@ -555,7 +571,7 @@ class _RatingTab extends StatelessWidget {
         return const Center(child: Text('Belum ada data rating'));
       }
       return RefreshIndicator(
-        onRefresh: () => c.loadRating(),
+        onRefresh: () => c.loadRating(force: true),
         child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: c.rating.length,
