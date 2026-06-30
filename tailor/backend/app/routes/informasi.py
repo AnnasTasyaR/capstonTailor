@@ -1,88 +1,74 @@
-from flask import Blueprint, jsonify
-from app import db
-from app.models.tailor import Tailor
-from app.models.order import OrderQueue
-from sqlalchemy import func
-from datetime import datetime, timedelta
-
+from flask import Blueprint, jsonify, request
 
 informasi_bp = Blueprint('informasi', __name__)
 
 
-def _today_local():
-    return datetime.utcnow().date()
+def _mongo_collection(name):
+    try:
+        from app.db_mongo import get_db
+        db = get_db()
+        if db is None:
+            return None
+        return db[name]
+    except Exception:
+        return None
+
+
+def _gender_filter(params: dict) -> dict:
+    g = request.args.get('gender', '').lower()
+    if g == 'pria':
+        params['gender'] = 'Pria'
+    elif g == 'wanita':
+        params['gender'] = 'Wanita'
+    return params
 
 
 @informasi_bp.route('/api/informasi/populer', methods=['GET'])
 def fashion_populer():
-    top = db.session.query(
-        OrderQueue.tailor_id,
-        OrderQueue.type,
-        func.count(OrderQueue.id).label('order_count')
-    ).group_by(
-        OrderQueue.tailor_id, OrderQueue.type
-    ).order_by(
-        func.count(OrderQueue.id).desc()
-    ).limit(20).all()
-
-    hasil = []
-    for tailor_id, service_type, count in top:
-        tailor = db.session.get(Tailor, tailor_id)
-        shop_name = tailor.shop_name if tailor else 'Tidak dikenal'
-        hasil.append({
-            'title': f'{shop_name} - {service_type}',
-            'category': service_type,
-            'historical_sold': count,
-            'price': 0,
-        })
-    return jsonify({'produk': hasil, 'total': len(hasil)})
+    coll = _mongo_collection('populer')
+    if coll is None:
+        return jsonify({'produk': [], 'total': 0})
+    try:
+        fil = _gender_filter({})
+        docs = list(coll.find(
+            fil,
+            {'_id': False, 'title': True, 'gender': True,
+             'historical_sold': True, 'price': True}
+        ).sort('historical_sold', -1).limit(20))
+        total = coll.count_documents(fil)
+        return jsonify({'produk': docs, 'total': total})
+    except Exception:
+        return jsonify({'produk': [], 'total': 0})
 
 
 @informasi_bp.route('/api/informasi/tren', methods=['GET'])
 def tren_fashion():
-    today = _today_local()
-    # Always return 7 consecutive days (fill missing days with 0)
-    rows = dict(
-        db.session.query(
-            func.date(OrderQueue.created_at).label('tgl'),
-            func.count(OrderQueue.id).label('jml')
-        ).filter(
-            func.date(OrderQueue.created_at) >= today - timedelta(days=6)
-        ).group_by(
-            func.date(OrderQueue.created_at)
-        ).all()
-    )
-
-    tren = []
-    for i in range(6, -1, -1):
-        d = today - timedelta(days=i)
-        tren.append({'date': str(d), 'orders': rows.get(d, 0)})
-    return jsonify({'tren': tren, 'total_hari': len(tren)})
+    coll = _mongo_collection('tren')
+    if coll is None:
+        return jsonify({'tren': [], 'total_hari': 0})
+    try:
+        docs = list(coll.find(
+            {},
+            {'_id': False, 'date': True, 'orders': True}
+        ).sort('date', 1).limit(7))
+        return jsonify({'tren': docs, 'total_hari': len(docs)})
+    except Exception:
+        return jsonify({'tren': [], 'total_hari': 0})
 
 
 @informasi_bp.route('/api/informasi/rating', methods=['GET'])
 def rating_fashion():
-    tailor_list = Tailor.query.filter(
-        Tailor.is_suspended == False
-    ).order_by(Tailor.rating.desc()).all()
-
-    order_counts = dict(
-        db.session.query(
-            OrderQueue.tailor_id,
-            func.count(OrderQueue.id)
-        ).filter(
-            OrderQueue.status.in_(['selesai', 'siap_diambil'])
-        ).group_by(OrderQueue.tailor_id).all()
-    )
-
-    hasil = []
-    for t in tailor_list:
-        hasil.append({
-            'title': t.shop_name,
-            'category': 'Tailor',
-            'rating_star': t.rating,
-            'rating_avg': round(t.rating, 2),
-            'rating_count': order_counts.get(t.id, 0),
-        })
-    hasil.sort(key=lambda x: x['rating_avg'], reverse=True)
-    return jsonify({'rating': hasil, 'total': len(hasil)})
+    coll = _mongo_collection('rating')
+    if coll is None:
+        return jsonify({'rating': [], 'total': 0})
+    try:
+        fil = _gender_filter({})
+        docs = list(coll.find(
+            fil,
+            {'_id': False, 'title': True, 'gender': True,
+             'rating_avg': True, 'rating_count': True}
+        ).sort([('rating_avg', -1), ('rating_count', -1)]).limit(20))
+        total = coll.count_documents(fil)
+        return jsonify({'rating': docs, 'total': total})
+    except Exception:
+        return jsonify({'rating': [], 'total': 0})

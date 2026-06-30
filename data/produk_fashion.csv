@@ -1,21 +1,46 @@
-product_id,title,category,price,rating_star,historical_sold,cmt_count,shop_location
-1001,Kemeja Pria Premium,Kemeja,125000,4.7,320,128,Jakarta
-1002,Batik Tulis Solo,Batik,200000,4.8,250,100,Solo
-1003,Gamis Syari,Gamis,175000,4.8,290,116,Jakarta
-1004,Kebaya Modern,Kebaya,250000,4.6,160,64,Yogyakarta
-1005,Daster Katun,Daster,65000,4.3,720,288,Jakarta
-1006,Celana Jeans,Celana,150000,4.4,410,164,Bandung
-1007,Jas Blazer,Jas,350000,4.7,130,52,Jakarta
-1008,Seragam Kerja,Seragam,120000,4.4,380,152,Surabaya
-1009,Kemeja Slimfit,Kemeja,85000,4.5,580,232,Bandung
-1010,Hoodie Fashion,Jaket,180000,4.3,340,136,Bandung
-1011,Gamis Anak,Gamis,125000,4.5,270,108,Jakarta
-1012,Rok Plisket,Rok,90000,4.5,430,172,Bandung
-1013,Tunik Batik,Batik,135000,4.5,360,144,Solo
-1014,Kebaya Brokat,Kebaya,300000,4.7,140,56,Yogyakarta
-1015,Celana Kulot,Celana,115000,4.6,390,156,Surabaya
-1016,Kaos Distro,Kaos,75000,4.2,650,260,Bandung
-1017,Blouse Korea,Blouse,95000,4.5,510,204,Jakarta
-1018,Kemeja Flannel,Kemeja,140000,4.3,280,112,Bandung
-1019,Kemeja Kantor,Kemeja,110000,4.4,490,196,Yogyakarta
-1020,Daster Kombinasi,Daster,78000,4.4,540,216,Jakarta
+product_id,title,category,price,rating_star,cmt_count,historical_sold,shop_location,condition,source
+77608982,Kaos Fashion L,Fashion,30000,4.7,184,33,Surabaya,,carousell
+35925127,"Original Jersey Netherlands Away 2015 ""7 Memphis Depay"" Euro Cup Nike [sportswear, sepakbola, vintage, retro, 90s, y2k, skate, casual, fashion, atasan, unisex]",Fashion,700000,3.7,129,28,Bekasi,,carousell
+85984677,“You Are Gay” Fashion Brand Acrostic Graphic Tee - trashed -faded - distressed - erd - vintage - band tee,Fashion,123,4.7,79,28,Bekasi,,carousell
+25649285,Fashion NY 68 Varsity Jacket,Fashion,150000,4.0,87,36,Medan,,carousell
+15767726,Kemeja Tnf Buat Fashion /Outdoor Original,Fashion,300000,3.6,128,27,Makassar,,carousell
+82462371,crewneck fashion,Fashion,70000,3.6,173,22,Bandung,,carousell
+62349101,Longsleeve Lacoste Fashion,Fashion,70000,4.1,103,2,Bandung,,carousell
+22019397,Jaket Bomber Fashion,Fashion,100000,3.7,199,48,Bekasi,,carousell
+88364831,Jaket parka army military green hijau m65 fashion guess,Fashion,200000,4.6,33,32,Bandung,,carousell
+62583289,Crewnack Off white Fashion,Fashion,100000,4.9,91,40,Semarang,,carousell
+39613896,Hodie Fashion sz M 67x55,Fashion,70000,4.1,98,47,Makassar,,carousell
+3650811,TB fashion,Fashion,150000,3.6,13,12,Bandung,,carousell
+25577472,Hoodie fashion mall Topten broken white Authentic,Fashion,150000,4.7,74,23,Surabaya,,carousell
+38992108,Fashion Today - Kemeja Crinkle Coklat,Fashion,35000,4.8,110,9,Depok,,carousell
+76903656,KEMEJA BIRU MAX FASHION TIPE OVERSIZE,Fashion,50000,4.6,58,7,Makassar,,carousell
+79673141,"[M] PLAY FASHION [B4-32] - (KAOS POLO / KAOS BERKERAH) (POLO SHIRT) SECOND, THRIFT, BEKAS, PRELOVED, USED - 0uZk2cvEbQYleWOh4XCw",Fashion,100000,4.6,143,42,Bandung,,carousell
+56293620,Atasan HANA FASHION,Fashion,40000,4.5,22,21,Jakarta,,carousell
+96953448,Kemeja Veterano Fashion not Caltop Pendleton Ralph Lauren Giordano,Fashion,70000,3.8,50,49,Depok,,carousell
+76724915,Brand fashion jepang ills,Fashion,100000,4.0,117,16,Medan,,carousell
+41725166,Kaos Art Vespa Vintage Fashion Retro Klasik Baju Abu-Abu,Fashion,49990,4.1,168,17,Makassar,,carousell
+45541267,Top Y2K 2000s Downtown Style | Atasan Kaos .✦ ݁˖ sawako shoujo vintage coquette morikei fairy y2k 2000s cottage whimsical downtown girl bohemian boho etnik retro grunge emo gothic alt core korean style japanese fashion,Fashion,35000,3.7,69,18,Bekasi,,carousell
+41510630,Jaket Hoodie pria fashion GIVE IT UP big logo hitam murah size m,Fashion,80000,3.5,32,31,Jakarta,,carousell
+88243349,(NO NEGO) FRAGILE tailored faux leather shirt jacket black structured office chic vintage officewear structured top korean fashion japanese style collared shirt fitted shirt blazer style black formal polyurethane shirt minimal chic,Fashion,35000,3.9,151,50,Semarang,,carousell
+95204375,[NETT] Fashion Today kemeja putih,Fashion,120000,3.5,177,26,Medan,,carousell
+1759904,Hoodie Off White Fashion,Fashion,200000,4.9,106,5,Tangerang,,carousell
+84979622,Kemeja Lengan Pendek Simon Fashion LD 92 1,Fashion,35000,3.7,24,23,Surabaya,,carousell
+22339853,Kaos Fashion 68 Hitam,Fashion,15000,4.8,55,4,Yogyakarta,,carousell
+76838306,Sex Pistols M punk Misfits Metallica Nirvana Fashion pop metal rap tee Art,Fashion,1000000,4.6,108,7,Makassar,,carousell
+50133989,kemeja ootd jumbo bigsize preloved fashion today,Fashion,65000,3.9,191,40,Semarang,,carousell
+29880574,Max Fashion shirt O neck size S,Fashion,55000,4.4,176,25,Tangerang,,carousell
+75547289,PRELOVED Fashion Today Shirt,Fashion,55750,3.9,91,40,Semarang,,carousell
+2090480,Fashion wanita / Atasan wanita / Kemeja / Vintage,Fashion,65000,4.0,82,31,Jakarta,,carousell
+67661682,Blouse fashion,Fashion,50000,4.7,84,33,Surabaya,,carousell
+31643621,"Bundling Kaos fashion volcom, insight, DC (3pcs)",Fashion,115000,3.6,23,22,Bandung,,carousell
+64383180,Batik keris fashion batik keris,Fashion,175000,4.5,182,31,Jakarta,,carousell
+84353197,PRELOVED Fashion today by alice norin knit top,Fashion,18350,3.7,199,48,Bekasi,,carousell
+52822737,Woman's Fashion Atasan Y2K/Coquette,Fashion,10000,4.7,139,38,Bekasi,,carousell
+33235209,BKK Fashion,Fashion,90000,4.4,11,10,Semarang,,carousell
+50423645,Cardigan rajut fashion,Fashion,65000,4.5,47,46,Medan,,carousell
+75900751,CARDIGAN RIB/CARDIGAN CROP/CARDIGAN RAJUT/CARDIGAN WAFER/CARDIGAN WAFFLE/BY GFS (GIRL FASHION STORY),Fashion,10000,3.6,153,2,Bandung,,carousell
+48838750,"Original Jersey Tottenham Hotspur ""Home"" 2014/15 #2 Walker Capital One Cup Final Under Armour [sportswear, sepakbola, vintage, retro, 90s, y2k, skate, casual, fashion, atasan, unisex]",Fashion,200000,4.0,152,1,Jakarta,,carousell
+64544318,Kemeja Tnf Lengan Panjang Fashion /Outdoor Pria Original,Fashion,350000,4.3,120,19,Depok,,carousell
+93805000,Jaket parka army military green hijau m65 fashion L brenn,Fashion,300000,4.5,2,1,Jakarta,,carousell
+47393802,Hodie Champion Fashion sz M 62x57,Fashion,120000,4.7,4,3,Surabaya,,carousell
+42320964,Fitted Top Shirt Y2K 2000s Coquette Style | Atasan Kemeja .✦ ݁˖ sawako shoujo vintage coquette morikei fairy y2k 2000s cottage whimsical downtown girl bohemian boho etnik retro grunge emo gothic alt core korean style japanese fashion,Fashion,48000,4.9,166,15,Tangerang,,carousell

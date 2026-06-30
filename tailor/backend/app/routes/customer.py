@@ -106,6 +106,7 @@ def create_order():
     uid = int(get_jwt_identity())
     tailor_id    = request.form.get('tailor_id')
     order_type   = request.form.get('type', '')[:50]
+    item_type    = request.form.get('item_type', '')[:30]
     design_notes = request.form.get('design_notes', '')[:1000]
     fitting_date_str = request.form.get('fitting_date', '')
     complexity   = request.form.get('complexity', 'medium')
@@ -145,6 +146,7 @@ def create_order():
     qn   = (last.queue_number or 0) + 1 if last else 1
     order = OrderQueue(
         customer_id=uid, tailor_id=tailor.id, type=order_type,
+        item_type=item_type or None,
         complexity=complexity, status='pending', design_image=design_image,
         design_notes=design_notes,
         estimated_done=datetime.utcnow() + timedelta(days=est_days),
@@ -154,7 +156,7 @@ def create_order():
     db.session.flush()
     db.session.add(OrderHistory(order_id=order.id, status='pending', notes='Pesanan dibuat'))
     db.session.add(Notification(user_id=tailor.user_id, message=f'Pesanan baru #{qn} ({order_type})'))
-    db.session.add(ActivityLog(user_id=uid, activity_type='checkout', description=f'Membuat pesanan {order_type} #{qn}'))
+    db.session.add(ActivityLog(user_id=uid, activity_type='checkout', description=f'Membuat pesanan {order_type} #{qn} di {tailor.shop_name}'))
     db.session.commit()
     return jsonify({"msg": "Pesanan berhasil dibuat", "order": order.to_dict()}), 201
 

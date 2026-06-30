@@ -5,6 +5,7 @@ class OrderProvider {
   static Future<Map<String, dynamic>> createOrder({
     required int tailorId,
     required String type,
+    String? itemType,
     String? designNotes,
     String? fittingDate,
     String? complexity,
@@ -16,6 +17,7 @@ class OrderProvider {
       fields: {
         'tailor_id': tailorId.toString(),
         'type': type,
+        'item_type': itemType ?? '',
         'design_notes': designNotes ?? '',
         'fitting_date': fittingDate ?? '',
         'complexity': complexity ?? 'medium',

@@ -75,7 +75,12 @@ class ActivityLogView extends GetView<ActivityLogController> {
               case 'checkout':
                 icon = Icons.receipt_long_rounded;
                 iconColor = AppColors.primary;
-                label = 'Pesanan';
+                label = 'Pesanan Baru';
+                break;
+              case 'order_update':
+                icon = Icons.update_rounded;
+                iconColor = const Color(0xFFF59E0B);
+                label = 'Status Pesanan';
                 break;
               default:
                 icon = Icons.info_outline;

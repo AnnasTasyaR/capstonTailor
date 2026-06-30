@@ -4,6 +4,7 @@ from app.models.user import User
 from app.models.tailor import Tailor, TailorAvailability
 from app.models.order import OrderQueue, OrderHistory
 from app.models.notification import Notification
+from app.models.activity_log import ActivityLog
 from app.middleware.jwt_guard import web_login_required
 from datetime import datetime
 
@@ -53,10 +54,13 @@ def update_order_status(oid):
     new_status = request.form.get('status', '')
     notes = request.form.get('notes', '')
     if new_status:
+        old_status = order.status
         order.status = new_status
         db.session.add(OrderHistory(order_id=order.id, status=new_status, notes=notes or f'Status diubah ke {new_status}'))
         status_labels = {'accepted':'diterima','fitting':'jadwal fitting','diproses':'diproses','dijahit':'sedang dijahit','selesai':'selesai','siap_diambil':'siap diambil','rejected':'ditolak'}
         db.session.add(Notification(user_id=order.customer_id, message=f'Pesanan #{order.queue_number} {status_labels.get(new_status, new_status)}'))
+        db.session.add(ActivityLog(user_id=order.customer_id, activity_type='order_update',
+            description=f'Pesanan #{order.queue_number} di {tailor.shop_name}: {old_status} → {new_status}'))
         db.session.commit()
         flash(f'Status pesanan diperbarui ke {new_status}.', 'success')
     return redirect(url_for('owner.order_detail', oid=oid))

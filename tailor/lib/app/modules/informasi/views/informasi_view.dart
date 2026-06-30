@@ -135,24 +135,28 @@ class _PopulerTab extends StatelessWidget {
       }
       return RefreshIndicator(
         onRefresh: () => c.loadPopuler(force: true),
-        child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: c.populer.length,
-                  itemBuilder: (_, i) {
-          final item = c.populer[i];
-          final sold = item['historical_sold'] ?? 0;
-          return _ProductCard(
-            rank: i + 1,
-            title: item['title'] ?? '',
-            category: item['category'] ?? '',
-            value: '$sold terjual',
-            price: item['price'] ?? 0,
-            color: i < 3
-                ? const Color(0xFF1B2A6B)
-                : AppColors.textSecondary,
-          );
-        },
-      ),
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _GenderFilter(controller: c),
+            const SizedBox(height: 8),
+            ...c.populer.asMap().entries.map((entry) {
+              final i = entry.key;
+              final item = entry.value;
+              final sold = item['historical_sold'] ?? 0;
+              return _ProductCard(
+                rank: i + 1,
+                title: item['title'] ?? '',
+                category: item['gender'] ?? '',
+                value: '$sold terjual',
+                price: item['price'] ?? 0,
+                color: i < 3
+                    ? const Color(0xFF1B2A6B)
+                    : AppColors.textSecondary,
+              );
+            }),
+          ],
+        ),
       );
     });
   }
@@ -572,24 +576,60 @@ class _RatingTab extends StatelessWidget {
       }
       return RefreshIndicator(
         onRefresh: () => c.loadRating(force: true),
-        child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: c.rating.length,
-        itemBuilder: (_, i) {
-          final item = c.rating[i];
-          final avg = (item['rating_avg'] ?? 0).toDouble();
-          final count = item['rating_count'] ?? 0;
-          return _RatingCard(
-            rank: i + 1,
-            title: item['title'] ?? '',
-            category: item['category'] ?? '',
-            rating: avg,
-            count: count,
-          );
-        },
-      ),
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _GenderFilter(controller: c),
+            const SizedBox(height: 8),
+            ...c.rating.asMap().entries.map((entry) {
+              final i = entry.key;
+              final item = entry.value;
+              final avg = (item['rating_avg'] ?? 0).toDouble();
+              final count = item['rating_count'] ?? 0;
+              return _RatingCard(
+                rank: i + 1,
+                title: item['title'] ?? '',
+                category: item['gender'] ?? '',
+                rating: avg,
+                count: count,
+              );
+            }),
+          ],
+        ),
       );
     });
+  }
+}
+
+// ── Gender Filter Chips ───────────────────────────────────────────────────────
+class _GenderFilter extends StatelessWidget {
+  final InformasiController controller;
+  const _GenderFilter({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final genders = InformasiController.genders;
+    return Obx(() => Row(
+      children: genders.map((g) {
+        final label = g == 'all' ? 'Semua' : g;
+        final selected = controller.selectedGender.value == g;
+        return Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: ChoiceChip(
+            label: Text(label, style: GoogleFonts.poppins(
+              fontSize: 12, fontWeight: FontWeight.w600,
+              color: selected ? Colors.white : AppColors.primary,
+            )),
+            selected: selected,
+            selectedColor: AppColors.primary,
+            backgroundColor: Colors.white,
+            side: BorderSide(color: AppColors.primary.withValues(alpha: 0.3)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            onSelected: (_) => controller.setGender(g),
+          ),
+        );
+      }).toList(),
+    ));
   }
 }
 

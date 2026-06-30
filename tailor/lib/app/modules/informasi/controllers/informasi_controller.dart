@@ -9,11 +9,24 @@ class InformasiController extends GetxController {
   final isLoadingTren = false.obs;
   final isLoadingRating = false.obs;
   final tabIndex = 0.obs;
+  final selectedGender = 'all'.obs;
+
+  static const genders = ['all', 'Pria', 'Wanita'];
 
   @override
   void onInit() {
     super.onInit();
     loadAll();
+  }
+
+  void setGender(String g) {
+    selectedGender.value = g;
+    loadAll(force: true);
+  }
+
+  String get _genderParam {
+    final g = selectedGender.value;
+    return g == 'all' ? '' : g;
   }
 
   void loadAll({bool force = false}) {
@@ -26,7 +39,7 @@ class InformasiController extends GetxController {
     if (populer.isNotEmpty && !force) return;
     isLoadingPopuler.value = true;
     try {
-      final result = await InformasiProvider.getPopuler();
+      final result = await InformasiProvider.getPopuler(gender: _genderParam);
       populer.value = (result['produk'] as List? ?? [])
           .map((e) => e as Map<String, dynamic>)
           .toList();
@@ -35,6 +48,7 @@ class InformasiController extends GetxController {
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoadingPopuler.value = false;
+      update();
     }
   }
 
@@ -51,6 +65,7 @@ class InformasiController extends GetxController {
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoadingTren.value = false;
+      update();
     }
   }
 
@@ -58,7 +73,7 @@ class InformasiController extends GetxController {
     if (rating.isNotEmpty && !force) return;
     isLoadingRating.value = true;
     try {
-      final result = await InformasiProvider.getRating();
+      final result = await InformasiProvider.getRating(gender: _genderParam);
       rating.value = (result['rating'] as List? ?? [])
           .map((e) => e as Map<String, dynamic>)
           .toList();
@@ -67,6 +82,7 @@ class InformasiController extends GetxController {
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoadingRating.value = false;
+      update();
     }
   }
 

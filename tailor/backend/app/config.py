@@ -67,6 +67,10 @@ class Config:
     GEMINI_API_KEY  = os.getenv('GEMINI_API_KEY', '')
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
 
+    # ── MongoDB (Analytics Storage) ───────────────────────────────────────
+    MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
+    MONGO_DB  = os.getenv('MONGO_DB', 'jahitln_analytics')
+
     # ── Rate Limiting ─────────────────────────────────────────────────────
     RATELIMIT_STORAGE_URL      = 'memory://'
     RATELIMIT_DEFAULT          = '200 per hour'

@@ -85,6 +85,7 @@ CREATE TABLE `order_queues` (
   `customer_id` int NOT NULL,
   `tailor_id` int NOT NULL,
   `type` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `item_type` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `complexity` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `design_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,

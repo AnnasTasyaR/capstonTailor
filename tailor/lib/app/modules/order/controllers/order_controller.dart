@@ -18,6 +18,13 @@ class OrderController extends GetxController {
   final isAnalyzing = false.obs;
   final isSubmitting = false.obs;
   final aiResult = Rx<Map<String, dynamic>?>(null);
+  final itemType = ''.obs;
+  final itemTypes = [
+    'Kemeja', 'Kaos', 'Jaket', 'Celana', 'Rok',
+    'Gamis', 'Kebaya', 'Batik', 'Daster', 'Jas',
+    'Blouse', 'Cardigan', 'Jersey', 'Crewneck',
+    'Seragam', 'Atasan',
+  ];
 
   @override
   void onInit() {
@@ -79,6 +86,7 @@ class OrderController extends GetxController {
       final result = await OrderProvider.createOrder(
         tailorId: tailor.id,
         type: serviceType,
+        itemType: itemType.value,
         designNotes: designNotes.value,
         fittingDate: fittingDate.value?.toIso8601String(),
         complexity: complexity.value,

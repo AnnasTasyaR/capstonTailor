@@ -167,6 +167,31 @@ class OrderFormView extends GetView<OrderController> {
                 : const SizedBox()),
 
             const SizedBox(height: 24),
+            _SectionTitle('Model Baju'),
+            const SizedBox(height: 12),
+            Obx(() => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.divider),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: controller.itemType.value.isEmpty ? null : controller.itemType.value,
+                  hint: Text('Pilih model baju',
+                    style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textMuted)),
+                  isExpanded: true,
+                  icon: const Icon(Icons.arrow_drop_down, color: AppColors.primary),
+                  items: controller.itemTypes.map((t) => DropdownMenuItem(
+                    value: t.toLowerCase(),
+                    child: Text(t, style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textPrimary)),
+                  )).toList(),
+                  onChanged: (v) { if (v != null) controller.itemType.value = v; },
+                ),
+              ),
+            )),
+            const SizedBox(height: 24),
             _SectionTitle('Catatan Desain'),
             const SizedBox(height: 12),
             TextField(

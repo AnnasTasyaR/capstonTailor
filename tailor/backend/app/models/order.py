@@ -9,6 +9,7 @@ class OrderQueue(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     tailor_id = db.Column(db.Integer, db.ForeignKey('tailors.id'), nullable=False)
     type = db.Column(db.String(30), nullable=False)  # permak, custom, seragam
+    item_type = db.Column(db.String(30), nullable=True)  # kemeja, jaket, batik, dll
     complexity = db.Column(db.String(20), nullable=True)  # simple, medium, complex
     status = db.Column(db.String(30), default='pending')
     # pending, accepted, fitting, diproses, dijahit, selesai, siap_diambil, rejected
@@ -29,6 +30,7 @@ class OrderQueue(db.Model):
             'customer_id': self.customer_id,
             'tailor_id': self.tailor_id,
             'type': self.type,
+            'item_type': self.item_type,
             'complexity': self.complexity,
             'status': self.status,
             'design_image': self.design_image,

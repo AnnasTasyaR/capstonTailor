@@ -179,10 +179,22 @@ def create_app():
                 print(f"[ADMIN] IMPORTANT: Change this password immediately!")
                 print(f"{'='*60}\n")
 
+    # ── MongoDB (Analytics, auto-seed dari CSV) ──────────────────────────
+    from app.db_mongo import init_mongo, close_mongo
+    try:
+        init_mongo(app.config['MONGO_URI'], app.config['MONGO_DB'])
+        print('[MONGO] Connected & seeded dari CSV.')
+    except Exception as e:
+        print(f'[MONGO] Could not connect: {e}. Informasi fallback ke kosong.', file=__import__('sys').stderr)
+
     # ── Root redirect ─────────────────────────────────────────────────────
     @app.route('/')
     def index():
         from flask import redirect, url_for
         return redirect(url_for('auth.web_login'))
+
+    # Cleanup
+    import atexit
+    atexit.register(close_mongo)
 
     return app
