@@ -49,3 +49,6 @@ backend/.env
 
 # Ignore large Android heap dump files
 *.hprof
+
+# Uploaded images
+backend/app/static/uploads/

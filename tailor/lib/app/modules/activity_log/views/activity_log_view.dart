@@ -115,7 +115,7 @@ class ActivityLogView extends GetView<ActivityLogController> {
                         if (desc.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(top: 2),
-                            child: Text(desc, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            child: Text(desc, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textSecondary)),
                           ),
                       ],
                     ),

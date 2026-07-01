@@ -127,15 +127,13 @@ class ApiProvider {
       request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
     }
 
-    // ✅ MultipartRequest pakai send() biasa, SSL bypass via IOClient tidak support ini
-    // Gunakan HttpClient langsung untuk multipart
     final httpClient = HttpClient()
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
     final ioClient = IOClient(httpClient);
 
     try {
-      final streamedResponse = await request.send().timeout(_timeout);
+      final streamedResponse = await ioClient.send(request).timeout(_timeout);
       final response = await http.Response.fromStream(streamedResponse);
       return _handleResponse(response);
     } finally {

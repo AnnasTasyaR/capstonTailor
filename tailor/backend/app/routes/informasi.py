@@ -50,7 +50,8 @@ def tren_fashion():
         docs = list(coll.find(
             {},
             {'_id': False, 'date': True, 'orders': True}
-        ).sort('date', 1).limit(7))
+        ).sort('date', -1).limit(7))
+        docs.reverse()
         return jsonify({'tren': docs, 'total_hari': len(docs)})
     except Exception:
         return jsonify({'tren': [], 'total_hari': 0})

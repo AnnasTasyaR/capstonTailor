@@ -1,41 +1,42 @@
 # Jahitln (TailorLink) — Agent Guide
 
-Single Flutter + Flask repo inside `tailor/`:
-- **Flutter app** (`tailor/lib/`) — GetX, Material 3, Poppins font, navy-blue primary (`#1B2A6B`)
+Single Flutter + Flask repo. All code under `tailor/`:
+- **Flutter app** (`tailor/lib/`) — GetX, Material 3, Poppins, navy-blue primary `#1B2A6B`
 - **Flask backend** (`tailor/backend/`) — REST API (`/api/*`) + session-based web dashboard for admin/owner
-- **Data analysis** (`data/`) — Jupyter notebook + CSVs (not read by backend)
+- **Data analysis** (`data/`) — Jupyter notebook + CSVs (**not read by backend**)
 
-## Quick start (dev server)
+## Dev server setup
 
 ```bash
-# 1. Import DB & run migrations
-mysql -u root -p tailorlink_db < tailor/database/jahit.sql
+# Terminal 1: Backend (port 5000, 0.0.0.0)
 cd tailor/backend
 pip install -r requirements.txt
-python migrate_google.py
-python migrate_email_verification.py
-python migrate_item_type.py
-
-# 2. Start backend (port 5000, binds 0.0.0.0)
+mysql -u root -p tailorlink_db < tailor/database/jahit.sql
+python migrate_google.py && python migrate_email_verification.py && python migrate_item_type.py
 flask run --debug
 
-#    Pada startup akan:
-#    - Scrape Carousell (produk fashion terbaru)
-#    - Seed ke MongoDB Atlas (populer, tren, rating)
-#    - Fallback ke CSV / hardcoded jika scrape gagal
-
-# 3. Expose via ngrok, then update baseUrl in lib/app/data/providers/api_provider.dart
+# Terminal 2: ngrok
 ngrok http 5000
 
-# 4. Run Flutter app
+# Terminal 3: Flutter
 cd tailor
 flutter pub get
+# Update baseUrl in lib/app/data/providers/api_provider.dart:8 with new ngrok URL
 flutter run
 ```
 
-> **Python version**: Dependencies target Python 3.12. Use `py -3.12` if default `python` is a different version.
-> **SMTP config**: `tailor/backend/.env` (SMTP_HOST/PORT/USER/PASS, FROM_EMAIL). Requires Gmail App Password.
-> **ngrok URL**: Changes every restart. Update `baseUrl` in `api_provider.dart` line 8.
+> **Python**: deps target 3.12. Use `py -3.12` if default is different.  
+> **SMTP**: `.env` needs Gmail App Password (SMTP_HOST/PORT/USER/PASS, FROM_EMAIL).
+
+## Startup behavior (important)
+
+On `flask run --debug`, `create_app()` (backend/app/__init__.py) does in order:
+1. Init SQLAlchemy + `db.create_all()` (auto-creates tables)
+2. Seed default `admin` user if missing (password from `ADMIN_DEFAULT_PASSWORD` env, or random printed to console)
+3. Connect to MongoDB + run `scraper.seed_data()` — scrapes Carousell fashion products, seeds `populer`/`tren`/`rating` collections, falls back to hardcoded data
+4. Root `/` redirects to web login
+
+**APScheduler** (`backend/app/scheduler.py`) defines daily ETL from MySQL → MongoDB but is **not wired into `create_app()`**. The `/api/informasi/*` reads from whatever MongoDB has (initially scraped/hardcoded data, stale unless scheduler started manually).
 
 ## Architecture
 
@@ -52,16 +53,16 @@ flutter run
 - `@web_login_required('admin', 'owner')` — Session guard for web dashboard
 
 ### Order status flow
-`pending → accepted → fitting → diproses → dijahit → selesai / siap_diambil` (or `rejected` at any point)
+`pending → accepted → fitting → diproses → dijahit → selesai / siap_diambil` (can `rejected` at any point)
 
-## Key conventions
+## Conventions
 
-- All API error messages in **Indonesian**
+- API error messages in **Indonesian**
 - Every response body includes `_statusCode` key (added by Flutter client)
 - Multipart upload file field: `design_image`
 - API client (`api_provider.dart`) — custom `HttpClient` bypasses SSL for ngrok, sends `ngrok-skip-browser-warning` header, 15s timeout
+- `ngrok-skip-browser-warning: true` header required on every request
 - Admin auto-seeded: username `admin`, password from `ADMIN_DEFAULT_PASSWORD` env or random printed to console
-- `/api/informasi/*` reads from `data/*.csv` (Shopee analysis), not from MySQL/MongoDB
 
 ## Routes (14)
 
@@ -97,10 +98,13 @@ gunicorn run:app                                     # production
 
 `tailor/analysis_options.yaml` — extends `package:flutter_lints/flutter.yaml`. Notable overrides: `constant_identifier_names: false`, `unnecessary_underscores: false`. Run with `dart analyze`.
 
-## Notes
+## Key operational notes
 
 - **Web dashboard**: Admin/owner login at `http://localhost:5000/login` (Flask sessions); customers use mobile app only
 - **Database**: Tables auto-created via `db.create_all()` on first backend run
-- **File uploads**: max 5MB, `png/jpg/jpeg/webp`, stored in `app/static/uploads/`
+- **File uploads**: max 5MB, `png/jpg/jpeg/webp`, MIME-checked via Pillow, stored in `app/static/uploads/`
 - **Rate limiting**: 200 req/hour, 50 req/min (in-memory); auth endpoints tighter
-- **Data analysis**: `/api/informasi/*` reads from MongoDB (auto-seeded from `data/*.csv` on every restart; Shopee analysis)
+- **MongoDB**: `/api/informasi/*` reads from MongoDB collections `populer`/`tren`/`rating`. Initially seeded from Carousell scrape (or hardcoded fallback). APScheduler exists in `scheduler.py` to keep data fresh but is **not auto-started**.
+- **CSV files** in `data/` are for the Jupyter notebook only — not used by the backend at all
+- **`daily_update.py`**: runs the Jupyter notebook via nbconvert; separate from backend scheduler
+- **API endpoints reference**: full table in `tailor/README.md`

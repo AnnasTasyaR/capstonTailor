@@ -115,13 +115,17 @@ def create_order():
     if not tailor_id or not order_type:
         return jsonify({"msg": "Tailor dan jenis jahit harus dipilih"}), 400
 
-    # Validate complexity
-    if complexity not in ('low', 'medium', 'high'):
+    complexity_map = {'sederhana': 'low', 'sedang': 'medium', 'rumit': 'high'}
+    if complexity in complexity_map:
+        complexity = complexity_map[complexity]
+    elif complexity not in ('low', 'medium', 'high'):
         complexity = 'medium'
 
     tailor = db.session.get(Tailor, int(tailor_id))
     if not tailor:
         return jsonify({"msg": "Penjahit tidak ditemukan"}), 404
+    if tailor.is_suspended:
+        return jsonify({"msg": "Penjahit sedang tidak tersedia"}), 400
 
     design_image = None
     if 'design_image' in request.files:
